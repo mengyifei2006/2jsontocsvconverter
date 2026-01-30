@@ -1,71 +1,462 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JSON to CSV Converter - Free Online Tool</title>
-    <meta name="description" content="Quickly convert your JSON data (arrays or objects) to CSV format online. Free, secure, and works entirely in your browser. No upload required.">
-    <link rel="stylesheet" href="style.css">
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1336697940295449" crossorigin="anonymous"></script>
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-4D2KH5TEJE"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>JSON to CSV Converter - Pro</title>
+    <meta name="description" content="Convert nested JSON to CSV instantly. Free, secure, and beautiful tool with visual table preview. Best JSON to CSV converter online.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        slate: { 50: '#f8fafc', 850: '#1e293b' },
+                        indigo: { 500: '#6366f1', 600: '#4f46e5' },
+                    },
+                    fontFamily: {
+                        mono: ['"JetBrains Mono"', 'Menlo', 'Monaco', 'Consolas', '"Liberation Mono"', '"Courier New"', 'monospace'],
+                        sans: ['-apple-system', 'BlinkMacSystemFont', '"SF Pro Display"', '"Segoe UI"', 'Roboto', 'Helvetica', 'Arial', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'glass': '0 8px 32px 0 rgba(31, 38, 135, 0.07)',
+                        'glow': '0 0 20px rgba(99, 102, 241, 0.3)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Mesh Gradient Background */
+        body {
+            background-color: #f8fafc;
+            background-image: 
+                radial-gradient(at 0% 0%, hsla(253,16%,7%,0) 0, hsla(253,16%,7%,0) 50%), 
+                radial-gradient(at 50% 0%, hsla(225,39%,30%,0) 0, hsla(225,39%,30%,0) 50%), 
+                radial-gradient(at 100% 0%, hsla(339,49%,30%,0) 0, hsla(339,49%,30%,0) 50%);
+        }
+        
+        .mesh-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            background: 
+                radial-gradient(circle at 15% 50%, rgba(224, 231, 255, 0.8), transparent 40%), 
+                radial-gradient(circle at 85% 30%, rgba(238, 242, 255, 0.8), transparent 40%),
+                radial-gradient(circle at 50% 80%, rgba(237, 233, 254, 0.8), transparent 40%);
+            filter: blur(80px);
+        }
 
-  gtag('config', 'G-4D2KH5TEJE');
-</script>
+        /* Custom scrollbar */
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background-color: rgba(203, 213, 225, 0.6); border-radius: 3px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background-color: rgba(148, 163, 184, 0.8); }
+        
+        /* Jelly effect */
+        .btn-jelly:active { transform: scale(0.96); }
+
+        /* Glassmorphism */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+        }
+
+        /* Input Concave Effect */
+        .input-concave {
+            background: rgba(241, 245, 249, 0.6);
+            box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.03);
+            border: 1px solid rgba(226, 232, 240, 0.6);
+        }
+
+        /* Table Styles (Apple Numbers) */
+        .preview-table { border-collapse: separate; border-spacing: 0; width: 100%; }
+        .preview-table th, .preview-table td {
+            border-right: 1px solid rgba(226, 232, 240, 0.6);
+            border-bottom: 1px solid rgba(226, 232, 240, 0.6);
+            padding: 10px 14px;
+            white-space: nowrap;
+        }
+        .preview-table th:last-child, .preview-table td:last-child { border-right: none; }
+        .preview-table tr:last-child td { border-bottom: none; }
+        .preview-table th {
+            background-color: rgba(248, 250, 252, 0.9);
+            font-weight: 600;
+            text-align: left;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            backdrop-filter: blur(8px);
+        }
+    </style>
+    <!-- JSON-LD -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "JSON to CSV Converter",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "Web",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+      "description": "Convert JSON to CSV online with flattened nested objects support. View preview table instantly.",
+      "featureList": "JSON Flattening, CSV Download, Table Preview, Fast Conversion"
+    }
+    </script>
 </head>
-<body>
-    <h1>Free Online JSON to CSV Converter</h1>
+<body class="text-slate-800 font-sans min-h-screen flex flex-col relative overflow-x-hidden selection:bg-indigo-100 selection:text-indigo-700">
 
-    <div class="converter-container">
-        <div class="panel input-panel">
-            <label for="json-input">Paste your JSON data here:</label>
-            <textarea id="json-input" placeholder="[{...}, {...}]"></textarea>
-        </div>
-        
-        <div class="controls">
-            <button id="convert-btn">CONVERT</button>
-            <button id="copy-btn">Copy to Clipboard</button>
-            <button id="download-btn">Download .CSV File</button>
-            <button id="clear-btn">Clear</button>
-        </div>
+    <div class="mesh-bg"></div>
 
-        <div class="panel output-panel">
-            <label for="csv-output">Your CSV output:</label>
-            <textarea id="csv-output" readonly></textarea>
+    <!-- Navbar -->
+    <nav class="sticky top-0 z-50 transition-all duration-300">
+        <div class="glass-card border-b-0 border-white/40 shadow-sm">
+            <div class="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="w-9 h-9 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center text-white font-bold shadow-glow ring-2 ring-white/50">
+                        <span class="text-sm">CSV</span>
+                    </div>
+                    <h1 class="text-lg font-bold tracking-tight text-slate-800">json2csv.app</h1>
+                </div>
+                
+                <!-- Desktop Links (Optional) -->
+                <div class="hidden md:flex items-center space-x-6 text-sm font-medium text-slate-500">
+                    <span class="text-slate-900 cursor-default">Converter</span>
+                    <!-- <a href="#" class="hover:text-slate-900 transition-colors">API</a> -->
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Segmented Control (Sticky below nav on mobile) -->
+    <div class="lg:hidden sticky top-16 z-40 bg-white/60 backdrop-blur-xl border-b border-white/20 px-4 py-3">
+        <div class="bg-slate-200/50 p-1 rounded-xl flex shadow-inner">
+            <button id="seg-input" class="flex-1 py-2 text-sm font-semibold rounded-lg bg-white shadow-sm text-slate-900 transition-all transform duration-200" onclick="switchTab('input')">Input</button>
+            <button id="seg-output" class="flex-1 py-2 text-sm font-semibold rounded-lg text-slate-500 hover:text-slate-700 transition-all" onclick="switchTab('output')">Result</button>
         </div>
     </div>
 
-    <div class="content">
-        <h2>How to Use This JSON to CSV Converter</h2>
-        <ol>
-            <li>Paste your JSON data into the left-side text box.</li>
-            <li>Click the "CONVERT" button.</li>
-            <li>Your CSV formatted data will instantly appear in the right-side box.</li>
-            <li>You can now use the "Copy to Clipboard" button or click "Download .CSV File" to save your data.</li>
-        </ol>
-
-        <h2>What is JSON?</h2>
-        <p>JSON (JavaScript Object Notation) is a lightweight data-interchange format. It is easy for humans to read and write and easy for machines to parse and generate. It is based on a subset of the JavaScript Programming Language Standard. JSON is a text format that is completely language independent but uses conventions that are familiar to programmers of the C-family of languages, including C, C++, C#, Java, JavaScript, Perl, Python, and many others. These properties make JSON an ideal data-interchange language.</p>
-
-        <h2>What is CSV?</h2>
-        <p>A CSV (Comma-Separated Values) file is a plain text file that contains a list of data. These files are often used for exchanging data between different applications. For example, databases and contact managers often support CSV files. The format is very simple: each line is a data record, and each record consists of one or more fields, separated by commas. The use of the comma as a field separator is the source of the name for this file format.</p>
-
-        <h2>Why Convert JSON to CSV?</h2>
-        <p><strong>Data Analysis:</strong> CSV is the standard format for most data analysis tools, including Microsoft Excel and Google Sheets. Converting JSON to CSV allows you to easily import complex data into these tools for analysis, charting, and reporting.</p>
-        <p><strong>Database Import:</strong> Many database systems, from traditional SQL databases to modern cloud-based solutions, offer bulk import features that work seamlessly with CSV files. This makes it a preferred format for migrating large datasets or performing bulk updates.</p>
-        <p><strong>Readability:</strong> For simple, tabular data, a CSV file viewed in a spreadsheet application can be much easier for a non-developer to read, understand, and even manually edit compared to the nested structure of a JSON file.</p>
-        
-        <h2>JSON to CSV Converter FAQ</h2>
-        <h3>Is this tool free?</h3>
-        <p>Yes, this online JSON to CSV converter is 100% free.</p>
-        <h3>Is my data safe?</h3>
-        <p>Yes, your data is completely safe. All conversion logic runs locally in your web browser using JavaScript. Your JSON data is never sent or uploaded to our server.</p>
+    <!-- Ad Slot A (Top Banner) -->
+    <div class="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
+        <div class="w-full h-24 border border-dashed border-slate-300 rounded-3xl flex items-center justify-center text-slate-400 font-medium text-sm overflow-hidden bg-white/30 backdrop-blur-sm">
+            Sponsor / Ad Space (Top Banner)
+        </div>
     </div>
 
-    <script src="script.js"></script>
+    <!-- Main Content -->
+    <main class="flex-grow max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full flex flex-col lg:flex-row gap-6 relative">
+        
+        <!-- Left Column: Input -->
+        <div id="panel-input" class="w-full lg:w-1/2 flex flex-col gap-4 transition-all duration-500 ease-out lg:flex">
+            <div class="flex items-center justify-between px-1">
+                <h2 class="text-lg font-semibold text-slate-700 flex items-center gap-2">
+                    <span class="w-1.5 h-1.5 rounded-full bg-indigo-500"></span> JSON Source
+                </h2>
+                <div class="flex gap-2">
+                    <button onclick="loadDemo()" class="text-xs font-medium text-indigo-600 hover:text-indigo-700 bg-indigo-50/80 px-3 py-1.5 rounded-lg transition-colors border border-indigo-100">
+                        Load Demo
+                    </button>
+                    <button onclick="clearInput()" class="text-xs font-medium text-rose-500 hover:text-rose-600 bg-rose-50/80 px-3 py-1.5 rounded-lg transition-colors border border-rose-100">
+                        Clear
+                    </button>
+                </div>
+            </div>
+            
+            <div class="glass-card rounded-3xl shadow-2xl shadow-indigo-500/10 p-1.5 flex-grow h-[70vh] flex flex-col relative group">
+                <div class="input-concave rounded-[20px] w-full h-full overflow-hidden relative transition-all duration-300 group-focus-within:shadow-indigo-500/20 group-focus-within:border-indigo-500/30">
+                    <textarea id="json-input" 
+                        class="w-full h-full p-6 font-mono text-sm leading-relaxed resize-none focus:outline-none bg-transparent text-slate-700 custom-scrollbar placeholder-slate-400"
+                        placeholder='Paste your JSON here (Array of objects or single object)...'
+                        spellcheck="false"></textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: Output -->
+        <div id="panel-output" class="w-full lg:w-1/2 flex flex-col gap-4 hidden lg:flex transition-all duration-500 ease-out">
+            <div class="flex items-center justify-between px-1">
+                <h2 class="text-lg font-semibold text-slate-700 flex items-center gap-2">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> CSV Result
+                </h2>
+                <div class="flex gap-2">
+                    <div class="flex bg-slate-200/60 p-1 rounded-lg mr-2">
+                        <button id="view-table-btn" onclick="switchView('table')" class="px-3 py-1 text-xs font-medium rounded-md bg-white shadow-sm text-slate-800 transition-all">Table</button>
+                        <button id="view-raw-btn" onclick="switchView('raw')" class="px-3 py-1 text-xs font-medium rounded-md text-slate-500 hover:text-slate-800 transition-all">Raw</button>
+                    </div>
+                    <button onclick="copyCSV()" class="btn-jelly flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200/80 rounded-xl shadow-sm hover:border-indigo-400 hover:text-indigo-600 text-xs font-semibold text-slate-600 transition-all">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path></svg>
+                        Copy
+                    </button>
+                    <button onclick="downloadCSV()" class="btn-jelly flex items-center gap-1.5 px-3 py-1.5 bg-indigo-600 rounded-xl shadow-lg shadow-indigo-500/30 hover:bg-indigo-700 text-xs font-semibold text-white transition-all">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                        Download
+                    </button>
+                </div>
+            </div>
+
+            <div class="glass-card rounded-3xl shadow-2xl shadow-indigo-500/10 flex-grow h-[70vh] flex flex-col relative overflow-hidden">
+                
+                <!-- Table View -->
+                <div id="view-table" class="w-full h-full overflow-auto custom-scrollbar bg-white/50">
+                    <div id="table-container" class="min-w-full min-h-full">
+                        <div class="h-full flex flex-col items-center justify-center text-slate-400 p-8 text-center">
+                            <div class="w-16 h-16 rounded-2xl bg-slate-50 flex items-center justify-center mb-4 shadow-sm border border-slate-100">
+                                <svg class="w-8 h-8 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                            </div>
+                            <p class="text-sm font-medium text-slate-500">Enter JSON to see preview</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Raw View -->
+                <div id="view-raw" class="hidden w-full h-full p-1.5">
+                    <div class="input-concave rounded-[20px] w-full h-full overflow-hidden">
+                         <textarea id="csv-output" readonly 
+                            class="w-full h-full p-6 font-mono text-sm leading-relaxed resize-none focus:outline-none bg-transparent text-slate-700 custom-scrollbar placeholder-slate-400"
+                            placeholder="CSV output will appear here..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Error Overlay -->
+                <div id="error-overlay" class="absolute inset-0 bg-white/90 backdrop-blur-md z-20 hidden flex-col items-center justify-center p-6 text-center transition-all duration-300">
+                    <div class="w-12 h-12 bg-rose-50 rounded-2xl flex items-center justify-center text-rose-500 mb-4 shadow-sm border border-rose-100">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    </div>
+                    <p id="error-message" class="text-sm text-rose-600 font-medium px-4"></p>
+                    <button onclick="hideError()" class="mt-4 text-xs text-slate-400 hover:text-slate-600 underline">Dismiss</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Ad Slot B (Middle) -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">
+        <div class="w-full h-32 border border-dashed border-slate-300 rounded-3xl flex items-center justify-center text-slate-400 font-medium text-sm overflow-hidden bg-white/30 backdrop-blur-sm">
+            Sponsor / Ad Space (Middle)
+        </div>
+    </div>
+
+    <!-- SEO Content -->
+    <section class="glass-card border-x-0 border-b-0 py-16 mt-auto">
+        <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-2xl font-bold tracking-tight text-slate-900 mb-6 text-center">How to convert JSON to CSV efficiently?</h2>
+            <div class="prose prose-slate text-slate-600 mx-auto">
+                <p class="mb-4">Converting JSON data to CSV format is essential for data analysis, reporting, and migrating data between systems. Our tool simplifies this process with a smart flattening engine.</p>
+                
+                <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">1. Flattening Nested Objects</h3>
+                <p class="mb-4">Unlike simple converters, we automatically detect nested structures (e.g., <code>user.address.city</code>) and flatten them into distinct CSV columns. This preserves your data hierarchy without losing information.</p>
+                
+                <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">2. Preview Before Download</h3>
+                <p class="mb-4">Don't fly blind. Use our visual table preview to verify your data columns and values before downloading the final CSV file. This saves time and ensures accuracy.</p>
+                
+                <h3 class="text-lg font-semibold text-slate-800 mt-6 mb-3">3. Secure Client-Side Processing</h3>
+                <p>Your data never leaves your browser. All conversions happen locally using optimized JavaScript, ensuring your sensitive information remains private.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-white/50 backdrop-blur-md border-t border-slate-200/60 py-8 text-center text-slate-500 text-sm">
+        <p>&copy; 2024 json2csv.app. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const inputEl = document.getElementById('json-input');
+        const outputEl = document.getElementById('csv-output');
+        const tableContainer = document.getElementById('table-container');
+        const errorOverlay = document.getElementById('error-overlay');
+        const errorMessage = document.getElementById('error-message');
+        
+        // Tab elements
+        const segInput = document.getElementById('seg-input');
+        const segOutput = document.getElementById('seg-output');
+        const panelInput = document.getElementById('panel-input');
+        const panelOutput = document.getElementById('panel-output');
+
+        // View elements
+        const viewTableBtn = document.getElementById('view-table-btn');
+        const viewRawBtn = document.getElementById('view-raw-btn');
+        const viewTable = document.getElementById('view-table');
+        const viewRaw = document.getElementById('view-raw');
+
+        let currentTab = 'input';
+        let currentView = 'table';
+
+        // Event Listeners
+        inputEl.addEventListener('input', debounce(convert, 500));
+
+        function debounce(func, wait) {
+            let timeout;
+            return function(...args) {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func.apply(this, args), wait);
+            };
+        }
+
+        function convert() {
+            const raw = inputEl.value.trim();
+            
+            if (!raw) {
+                outputEl.value = '';
+                tableContainer.innerHTML = `
+                    <div class="h-full flex flex-col items-center justify-center text-slate-400 p-8 text-center">
+                        <div class="w-16 h-16 rounded-2xl bg-slate-50 flex items-center justify-center mb-4 shadow-sm border border-slate-100">
+                            <svg class="w-8 h-8 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                        </div>
+                        <p class="text-sm font-medium text-slate-500">Enter JSON to see preview</p>
+                    </div>`;
+                hideError();
+                return;
+            }
+
+            try {
+                let jsonData = JSON.parse(raw);
+                if (!Array.isArray(jsonData)) jsonData = [jsonData];
+                
+                const flatData = jsonData.map(item => flattenObject(item));
+                const headers = Array.from(new Set(flatData.flatMap(Object.keys)));
+                
+                const csv = [
+                    headers.join(','),
+                    ...flatData.map(row => headers.map(header => {
+                        const val = row[header];
+                        return JSON.stringify(val === undefined ? "" : val);
+                    }).join(','))
+                ].join('\n');
+
+                outputEl.value = csv;
+                renderTable(headers, flatData);
+                hideError();
+
+            } catch (e) {
+                showError(e.message);
+            }
+        }
+
+        function flattenObject(obj, prefix = '', res = {}) {
+            for (const key in obj) {
+                const val = obj[key];
+                const newKey = prefix ? `${prefix}.${key}` : key;
+                if (typeof val === 'object' && val !== null) {
+                    flattenObject(val, newKey, res);
+                } else {
+                    res[newKey] = val;
+                }
+            }
+            return res;
+        }
+
+        function renderTable(headers, data) {
+            const previewData = data.slice(0, 50); 
+            let html = '<table class="preview-table text-sm text-left">';
+            
+            html += '<thead class="text-xs text-slate-500 uppercase"><tr>';
+            headers.forEach(h => html += `<th class="font-mono text-xs tracking-wider">${h}</th>`);
+            html += '</tr></thead>';
+            
+            html += '<tbody class="divide-y divide-slate-100 bg-white/40">';
+            previewData.forEach(row => {
+                html += '<tr class="hover:bg-indigo-50/30 transition-colors">';
+                headers.forEach(h => {
+                    const val = row[h] !== undefined ? row[h] : '';
+                    html += `<td class="font-mono text-slate-600 truncate max-w-xs text-xs" title="${val}">${val}</td>`;
+                });
+                html += '</tr>';
+            });
+            html += '</tbody></table>';
+
+            if (data.length > 50) {
+                html += `<div class="p-3 text-center text-xs text-slate-400 bg-slate-50/50 border-t border-slate-100 backdrop-blur-sm">Showing first 50 rows of ${data.length}</div>`;
+            }
+
+            tableContainer.innerHTML = html;
+        }
+
+        function showError(msg) {
+            errorMessage.textContent = 'Invalid JSON: ' + msg;
+            errorOverlay.classList.remove('hidden');
+            errorOverlay.classList.add('flex');
+        }
+
+        function hideError() {
+            errorOverlay.classList.add('hidden');
+            errorOverlay.classList.remove('flex');
+        }
+
+        function loadDemo() {
+            const demo = [
+                { "name": "Trae", "role": "AI Design Lead", "details": { "style": "Apple Pro", "version": "2.0" }, "active": true },
+                { "name": "User", "role": "Product Owner", "details": { "feedback": "Make it pop", "priority": "High" }, "active": true }
+            ];
+            inputEl.value = JSON.stringify(demo, null, 2);
+            convert();
+        }
+
+        function clearInput() {
+            inputEl.value = '';
+            convert();
+            inputEl.focus();
+        }
+
+        function copyCSV() {
+            if (!outputEl.value) return;
+            navigator.clipboard.writeText(outputEl.value).then(() => {
+                // Could add a toast here
+            });
+        }
+
+        function downloadCSV() {
+            if (!outputEl.value) return;
+            const blob = new Blob([outputEl.value], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'converted_data.csv';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // Responsive Switching Logic
+        function switchTab(tab) {
+            currentTab = tab;
+            // Mobile only logic
+            if (tab === 'input') {
+                segInput.className = 'flex-1 py-2 text-sm font-semibold rounded-lg bg-white shadow-sm text-slate-900 transition-all transform duration-200';
+                segOutput.className = 'flex-1 py-2 text-sm font-semibold rounded-lg text-slate-500 hover:text-slate-700 transition-all';
+                panelInput.classList.remove('hidden');
+                panelInput.classList.add('flex');
+                panelOutput.classList.add('hidden');
+                panelOutput.classList.remove('flex');
+            } else {
+                segInput.className = 'flex-1 py-2 text-sm font-semibold rounded-lg text-slate-500 hover:text-slate-700 transition-all';
+                segOutput.className = 'flex-1 py-2 text-sm font-semibold rounded-lg bg-white shadow-sm text-slate-900 transition-all transform duration-200';
+                panelInput.classList.add('hidden');
+                panelInput.classList.remove('flex');
+                panelOutput.classList.remove('hidden');
+                panelOutput.classList.add('flex');
+            }
+        }
+
+        function switchView(view) {
+            currentView = view;
+            if (view === 'table') {
+                viewTableBtn.className = 'px-3 py-1 text-xs font-medium rounded-md bg-white shadow-sm text-slate-800 transition-all';
+                viewRawBtn.className = 'px-3 py-1 text-xs font-medium rounded-md text-slate-500 hover:text-slate-800 transition-all';
+                viewTable.classList.remove('hidden');
+                viewRaw.classList.add('hidden');
+            } else {
+                viewTableBtn.className = 'px-3 py-1 text-xs font-medium rounded-md text-slate-500 hover:text-slate-800 transition-all';
+                viewRawBtn.className = 'px-3 py-1 text-xs font-medium rounded-md bg-white shadow-sm text-slate-800 transition-all';
+                viewTable.classList.add('hidden');
+                viewRaw.classList.remove('hidden');
+            }
+        }
+    </script>
 </body>
 </html>
